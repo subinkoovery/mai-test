@@ -6,6 +6,7 @@ import static ledger.TestRunner.assertThrows;
 import java.util.Arrays;
 
 import ledger.TestRunner;
+import ledger.enums.Currency;
 
 /** Allocation: the parts always sum to the total. */
 public final class AllocatorTest {

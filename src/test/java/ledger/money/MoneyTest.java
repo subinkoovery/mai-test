@@ -4,6 +4,7 @@ import static ledger.TestRunner.assertEquals;
 import static ledger.TestRunner.assertThrows;
 
 import ledger.TestRunner;
+import ledger.enums.Currency;
 
 /** Money: exact, scale-aware, currency-safe. */
 public final class MoneyTest {

@@ -1,5 +1,7 @@
 package ledger.money;
 
+import ledger.enums.Currency;
+
 import java.util.Objects;
 
 /** An exact amount: whole minor units plus the currency that gives them scale. */

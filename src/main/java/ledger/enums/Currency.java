@@ -1,4 +1,4 @@
-package ledger.money;
+package ledger.enums;
 
 public enum Currency {
     AED(2),
