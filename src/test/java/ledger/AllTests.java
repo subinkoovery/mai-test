@@ -1,5 +1,6 @@
 package ledger;
 
+import ledger.journal.JournalTest;
 import ledger.money.AllocatorTest;
 import ledger.money.MoneyTest;
 import ledger.money.RoundingTest;
@@ -15,6 +16,7 @@ public final class AllTests {
                 .add(MoneyTest.suite())
                 .add(RoundingTest.suite())
                 .add(AllocatorTest.suite())
+                .add(JournalTest.suite())
                 .run();
         System.exit(exitCode);
     }
