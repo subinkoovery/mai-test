@@ -14,3 +14,4 @@
 | 2026-10-25 12:59 | stream events and print per day report                                                                                                       |
 | 2026-10-25 13:23 | Interest calculation: exact accruals per day, one capitalised credit  after the Day 6 close                                                  |
 | 2026-10-25 14:45 | Populated REJECTED.md with criteria.                                                                                                         |
+| 2026-10-25 15:38 | Populated README.md.                                                                                                           |

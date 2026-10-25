@@ -47,6 +47,8 @@ public final class Replay {
         Map<String, Money> closed = new LinkedHashMap<>();
         Map<String, String> authAtClose = new LinkedHashMap<>();
         Map<String, List<String>> errorsByKey = new LinkedHashMap<>();
+        List<Event> arrival = new ArrayList<>();
+        List<EventOutcome> outcomes = new ArrayList<>();
 
         for (Event event : events) {
             int day = openDay.get(event.accountId());
@@ -60,6 +62,8 @@ public final class Replay {
             openDay.put(event.accountId(), event.processingDay());
 
             EventOutcome outcome = engine.process(event);
+            arrival.add(event);
+            outcomes.add(outcome);
             if (outcome instanceof EventOutcome.Rejected rejected) {
                 errorsByKey.computeIfAbsent(key(event.accountId(), event.processingDay()),
                         k -> new ArrayList<>()).add(event.eventId() + " " + rejected.code());
@@ -92,6 +96,7 @@ public final class Replay {
             }
         }
         System.out.println();
+        //logArrival(arrival, outcomes);
     }
 
     private static String key(String account, int day) {
@@ -125,5 +130,83 @@ public final class Replay {
     /** A day's balance as it stood at the end of another day, before fees. */
     private static Money valueDayBalance(Ledger ledger, String account, int day, int asOf) {
         return ledger.balanceBeforeFeesAt(account, day, asOf);
+    }
+
+    /** Every event in the order it was applied, with what the engine did with it. */
+    private static void logArrival(List<Event> events, List<EventOutcome> outcomes) {
+        System.out.println("Event Arrival Log");
+        System.out.println("------------------------------------------");
+        System.out.printf("%-3s | %-6s | %-10s | %-7s | %9s | %2s | %2s | %s%n",
+                "#", "event", "type", "account", "amount", "vd", "pd", "outcome");
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            System.out.printf("%-3d | %-6s | %-10s | %-7s | %9s | %2s | %2s | %s%n",
+                    i + 1,
+                    event.eventId(),
+                    typeOf(event),
+                    event.accountId(),
+                    amountOf(event),
+                    valueDayOf(event),
+                    event.processingDay(),
+                    outcomeText(outcomes.get(i)));
+        }
+    }
+
+    private static String typeOf(Event event) {
+        if (event instanceof Event.Credit) {
+            return "CREDIT";
+        }
+        if (event instanceof Event.Debit) {
+            return "DEBIT";
+        }
+        if (event instanceof Event.Authorize) {
+            return "AUTHORIZE";
+        }
+        if (event instanceof Event.Settle) {
+            return "SETTLE";
+        }
+        return "REVERSAL";
+    }
+
+    private static String amountOf(Event event) {
+        if (event instanceof Event.Credit credit) {
+            return credit.amount().format();
+        }
+        if (event instanceof Event.Debit debit) {
+            return debit.amount().format();
+        }
+        if (event instanceof Event.Authorize authorisation) {
+            return authorisation.amount().format();
+        }
+        if (event instanceof Event.Settle settlement) {
+            return settlement.amount().format();
+        }
+        return "-";
+    }
+
+    private static String valueDayOf(Event event) {
+        if (event instanceof Event.Credit credit) {
+            return String.valueOf(credit.valueDay());
+        }
+        if (event instanceof Event.Debit debit) {
+            return String.valueOf(debit.valueDay());
+        }
+        if (event instanceof Event.Authorize authorisation) {
+            return String.valueOf(authorisation.valueDay());
+        }
+        if (event instanceof Event.Settle settlement) {
+            return String.valueOf(settlement.valueDay());
+        }
+        return "-";
+    }
+
+    private static String outcomeText(EventOutcome outcome) {
+        if (outcome instanceof EventOutcome.Posted posted) {
+            return "posted #" + posted.posting().id();
+        }
+        if (outcome instanceof EventOutcome.Accepted accepted) {
+            return accepted.detail();
+        }
+        return "rejected " + ((EventOutcome.Rejected) outcome).code();
     }
 }

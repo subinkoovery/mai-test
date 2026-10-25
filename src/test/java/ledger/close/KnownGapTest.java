@@ -51,9 +51,18 @@ public final class KnownGapTest {
                     close.close("ACC-001", 5);
 
                     assertEquals("Day 2 restated", "-370.00", ledger.balanceTo("ACC-001", 2).format());
+
+                    // Fails by design: keyed to the value day, Day 2 would carry a fee;
+                    // this design keys fees to the processing day and closes a day for good,
+                    // so Day 2 has none. Reveals: "once per day" is incomplete until the
+                    // day the fee is keyed to is named.
                     assertEquals("a fee on Day 2, because Day 2 is negative by value date",
                             1, feesOn(journal, 2));
                 });
+    }
+
+    public static void main(String[] args) {
+        System.exit(suite().run());
     }
 
     private static int feesOn(Journal journal, int day) {
