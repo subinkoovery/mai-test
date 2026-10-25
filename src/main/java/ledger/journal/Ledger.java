@@ -21,16 +21,20 @@ public final class Ledger {
     }
 
     public Money balanceTo(String accountId, int day) {
-        Currency ccy = currencyAccountMap.get(accountId);
-        if (ccy == null) {
-            throw new IllegalArgumentException("unknown account: " + accountId);
-        }
-        Money total = Money.zero(ccy);
+        Money total = Money.zero(currencyOf(accountId));
         for (Posting posting : journal.snapshot()) {
             if (posting.accountId().equals(accountId) && posting.valueDay() <= day) {
                 total = total.plus(posting.amount());
             }
         }
         return total;
+    }
+
+    public Currency currencyOf(String accountId) {
+        Currency ccy = currencyAccountMap.get(accountId);
+        if (ccy == null) {
+            throw new IllegalArgumentException("unknown account: " + accountId);
+        }
+        return ccy;
     }
 }

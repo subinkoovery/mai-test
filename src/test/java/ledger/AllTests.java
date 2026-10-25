@@ -1,6 +1,8 @@
 package ledger;
 
+import ledger.auth.AuthRegistryTest;
 import ledger.journal.JournalTest;
+import ledger.journal.LedgerTest;
 import ledger.money.AllocatorTest;
 import ledger.money.MoneyTest;
 import ledger.money.RoundingTest;
@@ -17,6 +19,8 @@ public final class AllTests {
                 .add(RoundingTest.suite())
                 .add(AllocatorTest.suite())
                 .add(JournalTest.suite())
+                .add(LedgerTest.suite())
+                .add(AuthRegistryTest.suite())
                 .run();
         System.exit(exitCode);
     }
