@@ -8,3 +8,4 @@
 | 2026-10-25 00:21 | Test suite: `TestRunner`, `AllTests`, and 9 cases for scale, precision, currency safety, reversal, rounding and allocation |
 | 2026-10-25 01:35 | Journal, Posting and Ledger: append-only log, one entry, derived balance |
 | 2026-10-25 09:59 | AuthRegistry with holds for authorizations of hold amounts |
+| 2026-10-25 10:55 | Engine routes events: credit/debit to the journal, authorisation to AuthRegistry, settlement posts and releases; unknown auth rejected |
