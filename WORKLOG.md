@@ -9,3 +9,4 @@
 | 2026-10-25 01:35 | Journal, Posting and Ledger: append-only log, one entry, derived balance |
 | 2026-10-25 09:59 | AuthRegistry with holds for authorizations of hold amounts |
 | 2026-10-25 10:55 | Engine routes events: credit/debit to the journal, authorisation to AuthRegistry, settlement posts and releases; unknown auth rejected |
+| 2026-10-25 11:28 | Reversal: Event.Reverse resolves the target posting by event id, posts the opposite amount on the original value day, and keeps the original |

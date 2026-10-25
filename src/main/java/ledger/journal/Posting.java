@@ -30,8 +30,8 @@ public record Posting(
         }
     }
 
-    /** A reversal names the posting it cancels. */
+    /** A reversal is a REVERSAL posting that names the posting it cancels. */
     public boolean isReversal() {
-        return referenceId != null;
+        return kind == PostingKind.REVERSAL && referenceId != null;
     }
 }

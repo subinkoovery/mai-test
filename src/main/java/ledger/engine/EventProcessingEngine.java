@@ -14,6 +14,9 @@ import ledger.money.Money;
 public final class EventProcessingEngine {
 
     public static final String UNKNOWN_AUTH = "UNKNOWN_AUTH";
+    public static final String UNKNOWN_POSTING = "UNKNOWN_POSTING";
+    public static final String ACCOUNT_MISMATCH = "ACCOUNT_MISMATCH";
+    public static final String ALREADY_REVERSED = "ALREADY_REVERSED";
 
     private final Journal journal;
     private final AuthRegistry authorisations;
@@ -46,6 +49,29 @@ public final class EventProcessingEngine {
             return new EventOutcome.Posted(post(settlement.accountId(), PostingKind.SETTLEMENT,
                     settlement.amount().negate(), settlement.valueDay(),
                     settlement.processingDay(), settlement.eventId()));
+        }
+        if (event instanceof Event.Reverse reversal) {
+            Posting original = journal.findByEventId(reversal.reversesEventId()).orElse(null);
+            if (original == null) {
+                return new EventOutcome.Rejected(UNKNOWN_POSTING,
+                        "no posting for the reversal event " + reversal.reversesEventId());
+            }
+            if (!original.accountId().equals(reversal.accountId())) {
+                return new EventOutcome.Rejected(ACCOUNT_MISMATCH,
+                        "posting " + original.id() + " belongs to " + original.accountId());
+            }
+            if (journal.isReversed(original.id())) {
+                return new EventOutcome.Rejected(ALREADY_REVERSED,
+                        "posting " + original.id() + " is already reversed");
+            }
+            return new EventOutcome.Posted(journal.append(
+                    original.accountId(),
+                    PostingKind.REVERSAL,
+                    original.amount().negate(),
+                    original.valueDay(),
+                    reversal.processingDay(),
+                    reversal.eventId(),
+                    original.id()));
         }
         throw new IllegalStateException("unhandled event: " + event);
     }

@@ -9,7 +9,7 @@ import ledger.money.Money;
  *
  */
 public sealed interface Event
-        permits Event.Credit, Event.Debit, Event.Authorize, Event.Settle {
+        permits Event.Credit, Event.Debit, Event.Authorize, Event.Settle, Event.Reverse {
 
     String eventId();
 
@@ -40,6 +40,18 @@ public sealed interface Event
         public Settle {
             requireCommon(eventId, accountId, amount, valueDay, processingDay);
             Objects.requireNonNull(authId, "authId required");
+        }
+    }
+
+    record Reverse(String eventId, String accountId, String reversesEventId,
+                   int processingDay) implements Event {
+        public Reverse {
+            Objects.requireNonNull(eventId, "eventId required");
+            Objects.requireNonNull(accountId, "accountId required");
+            Objects.requireNonNull(reversesEventId, "reversesEventId required");
+            if (processingDay < 1) {
+                throw new IllegalArgumentException("day must be 1 or later");
+            }
         }
     }
 
