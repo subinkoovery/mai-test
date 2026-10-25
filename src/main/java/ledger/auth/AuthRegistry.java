@@ -80,4 +80,15 @@ public final class AuthRegistry {
         Auth auth = authorisationsById.get(id);
         return auth == null ? null : auth.accountId();
     }
+
+    /** The state of every authorisation on an account, in insertion order. */
+    public Map<String, AuthState> states(String accountId) {
+        Map<String, AuthState> states = new LinkedHashMap<>();
+        for (Auth auth : authorisationsById.values()) {
+            if (auth.accountId().equals(accountId)) {
+                states.put(auth.id(), auth.state());
+            }
+        }
+        return states;
+    }
 }
