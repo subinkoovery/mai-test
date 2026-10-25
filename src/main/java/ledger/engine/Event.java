@@ -13,6 +13,10 @@ public sealed interface Event
 
     String eventId();
 
+    String accountId();
+
+    int processingDay();
+
     record Credit(String eventId, String accountId, Money amount,
                   int valueDay, int processingDay) implements Event {
         public Credit {

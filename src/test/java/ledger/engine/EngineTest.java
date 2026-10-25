@@ -45,6 +45,13 @@ public final class EngineTest {
                     assertEquals("no posting", before, journal.size());
                     assertEquals("no hold touched", heldBefore.format(), auths.heldFor("ACC-001").format());
 
+                    EventOutcome wrongAccount = eventProcessingEngine.process(new Event.Settle(
+                            "E6b", "ACC-002", "Auth-A", Money.parse("185.00", Currency.AED), 4, 4));
+                    assertEquals("wrong account", EventProcessingEngine.ACCOUNT_MISMATCH,
+                            wrongAccount.code());
+                    assertEquals("no posting", before, journal.size());
+                    assertEquals("hold still held", heldBefore.format(), auths.heldFor("ACC-001").format());
+
                     EventOutcome applied = eventProcessingEngine.process(new Event.Settle("E5", "ACC-001", "Auth-A",
                             Money.parse("185.00", Currency.AED), 4, 4));
 

@@ -74,4 +74,10 @@ public final class AuthRegistry {
     public boolean isKnown(String id) {
         return authorisationsById.containsKey(id);
     }
+
+    /** The account an authorisation belongs to, or null if it is unknown. */
+    public String accountOf(String id) {
+        Auth auth = authorisationsById.get(id);
+        return auth == null ? null : auth.accountId();
+    }
 }

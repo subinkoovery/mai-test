@@ -45,6 +45,11 @@ public final class EventProcessingEngine {
                 return new EventOutcome.Rejected(UNKNOWN_AUTH,
                         "no authorisation for " + settlement.authId());
             }
+            if (!authorisations.accountOf(settlement.authId()).equals(settlement.accountId())) {
+                return new EventOutcome.Rejected(ACCOUNT_MISMATCH,
+                        settlement.authId() + " belongs to "
+                                + authorisations.accountOf(settlement.authId()));
+            }
             authorisations.settle(settlement.authId(), settlement.amount());
             return new EventOutcome.Posted(post(settlement.accountId(), PostingKind.SETTLEMENT,
                     settlement.amount().negate(), settlement.valueDay(),
