@@ -1,6 +1,6 @@
 # Ledger core — in-memory account ledger
 
-Six-day ledger in plain Java 17. No framework, no database, no build tool.
+Six-day ledger in Java 17
 
 ## Requirements
 
