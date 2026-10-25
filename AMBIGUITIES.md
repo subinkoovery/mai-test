@@ -1,13 +1,15 @@
 # AMBIGUITIES.md
 
-| # | Ambiguity                                    | Resolution                                                                                                                       | More info |
-|---|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|---|
-| 1 | How is a day represented?                    | `int` 1..6, no calendar date                                                                                                     | `LocalDate` needs an invented start date |
-| 2 | Can two currencies be combined?              | No — `Money` throws on mismatch                                                                                                  | Implicit FX needs a rate the system lacks |
-| 3 | Which date drives balances?                  | `valueDay` drives balances; `processingDay` only for fees                                                                        | |
-| 4 | More decimals than the currency allows       | Rejected at parse (`0.186` AED)                                                                                                  | Rounding on ingest hides a feed error |
-| 5 | Fewer decimals                               | Padded (`18.6` → `18.60`)                                                                                                        | |
-| 6 | Is a hold money?                             | No — lives in `AuthRegistry`, not the journal                                                                                    | |
-| 7 | Duplicate authorisation id                   | Does not allow. Throw error                                                                                                      | |
-| 8 | Can a posting be reversed twice?             | No — a posting cancels once; detected by a `REVERSAL` posting whose `referenceId` points at it,also reversal can not be reversed | Allowing it lets a replayed event double the money |
-| 9 | BHD : No overdraft fee is specified          | No overdraft fee is specified in BHD; a BHD overdraft throws rather than guessing                                                | A converted fee needs an FX rate |
+| #   | Ambiguity                                    | Resolution                                                                                                                       | More info                                             |
+|-----|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| 1   | How is a day represented?                    | `int` 1..6, no calendar date                                                                                                     | `LocalDate` needs an invented start date              |
+| 2   | Can two currencies be combined?              | No — `Money` throws on mismatch                                                                                                  | Implicit FX needs a rate the system lacks             |
+| 3   | Which date drives balances?                  | `valueDay` drives balances; `processingDay` only for fees                                                                        |                                                       |
+| 4   | More decimals than the currency allows       | Rejected at parse (`0.186` AED)                                                                                                  | Rounding on ingest hides a feed error                 |
+| 5   | Fewer decimals                               | Padded (`18.6` → `18.60`)                                                                                                        |                                                       |
+| 6   | Is a hold money?                             | No — lives in `AuthRegistry`, not the journal                                                                                    |                                                       |
+| 7   | Duplicate authorisation id                   | Does not allow. Throw error                                                                                                      |                                                       |
+| 8   | Can a posting be reversed twice?             | No — a posting cancels once; detected by a `REVERSAL` posting whose `referenceId` points at it,also reversal can not be reversed | Allowing it lets a replayed event double the money    |
+| 9   | BHD : No overdraft fee is specified          | No overdraft fee is specified in BHD; a BHD overdraft throws rather than guessing                                                | A converted fee needs an FX rate                      |
+| 10  | When is interest capitalised? | After the Day 6 close, as one credit.                                                                                            | |
+| 11  | Does a negative balance accrue? | No — zero accrual for that day, not a negative one                                                                               | As it does not mentioned in the problem               |

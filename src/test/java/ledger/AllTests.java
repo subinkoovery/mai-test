@@ -2,6 +2,7 @@ package ledger;
 
 import ledger.auth.AuthRegistryTest;
 import ledger.close.DayCloseTest;
+import ledger.interest.InterestTest;
 import ledger.engine.EngineTest;
 import ledger.journal.JournalTest;
 import ledger.journal.LedgerTest;
@@ -25,6 +26,7 @@ public final class AllTests {
                 .add(AuthRegistryTest.suite())
                 .add(EngineTest.suite())
                 .add(DayCloseTest.suite())
+                .add(InterestTest.suite())
                 .run();
         System.exit(exitCode);
     }

@@ -1,27 +1,53 @@
 # NUMBERS.md
 
-Every constant: the value, where it is used, why this value, and why not half of it.
+Every constant: the value, where it is used, and why this value.
 
 ---
 
 ## 1 · Currency scale
 
-| Currency | Decimal places | One major unit | Used in |
-|---|---|---|---|
-| AED | 2 | 1 dirham = 100 fils (1200.00 → `120000`) | `ledger/enums/Currency.java` |
-| BHD | 3 | 1 dinar = 1000 fils (10.000 → `10000`) | `ledger/enums/Currency.java` |
+| Value | Meaning | Used in |
+|---|---|---|
+| `2` | AED decimal places, 1 dirham = 100 fils | `ledger/enums/Currency.java:4` |
+| `3` | BHD decimal places, 1 dinar = 1000 fils | `ledger/enums/Currency.java:5` |
 
+---
+
+## 2 · Overdraft fee
+
+| Value | Meaning | Used in |
+|---|---|---|
+| `2 500` | 25.00 AED in fils | `ledger/close/FeeSchedule.java:14` |
+| `1` | one assessment per (account, day) | `ledger/close/DayClose.java:28` |
+| `< 0` | the fee needs a negative closing balance | `ledger/close/DayClose.java:31` |
 
 ---
 
-## 2 · Algorithmic constants
+## 3 · Interest
 
-
-| Value | Meaning | Cost of changing it | Used in |
-|---|---|---|---|
-| `10` | decimal base, 10^scale | any other base stops being decimal money | `ledger/money/Money.java` |
-| `2` | "half" is `2 × remainder ≥ denominator` | `1` would make it quarter-up | `ledger/money/Rounding.java` |
-| `+1 / −1` | rounding direction: away from zero | flipping it makes rounding asymmetric | `ledger/money/Rounding.java` |
-| `0`, `1` | zero, single step, "not found" | none; no meaning to assign | `ledger/money/` |
+| Value | Meaning | Used in |
+|---|---|---|
+| `4` | numerator of the daily rate, 0.04% | `ledger/interest/Interest.java:20` |
+| `10 000` | denominator, the rate as an exact fraction | `ledger/interest/Interest.java:21` |
+| Day `6` | capitalisation after the Day 6 close | `ledger/replay/Replay.java:73` |
 
 ---
+
+
+## 4 · Arithmetic and window
+
+| Value | Meaning | Used in |
+|---|---|---|
+| `10` | decimal base, 10^scale | `ledger/money/Money.java:144` |
+| `2` | "half" is `2 × remainder ≥ denominator` | `ledger/money/Rounding.java:18` |
+| `+1 / −1` | rounding direction, away from zero | `ledger/money/Rounding.java:19` |
+| `6` | the window, Day 1–6 | `ledger/replay/Replay.java:24` |
+
+---
+
+## 6 · Source data
+
+| Value | Meaning | Used in |
+|---|---|---|
+| `E1`–`E10` | the stream as given: amounts, days, auth ids | `data/events.csv` |
+| `3` | E10's instalments, split by `Allocator.splitEven` | `data/events.csv` → `ledger/replay/EventCsv.java` |

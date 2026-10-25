@@ -12,3 +12,4 @@
 | 2026-10-25 11:28 | Reversal: Event.Reverse resolves the target posting by event id, posts the opposite amount on the original value day, and keeps the original |
 | 2026-10-25 12:24 | DayClose: 25.00 fee once per AED account                                                                                                     |
 | 2026-10-25 12:59 | stream events and print per day report                                                                                                       |
+| 2026-10-25 13:23 | Interest: exact accruals per day, one capitalised credit  after the Day 6 close|

@@ -14,6 +14,7 @@ import ledger.engine.EventOutcome;
 import ledger.engine.EventProcessingEngine;
 import ledger.enums.Currency;
 import ledger.journal.Journal;
+import ledger.interest.Interest;
 import ledger.journal.Ledger;
 import ledger.money.Money;
 
@@ -34,6 +35,7 @@ public final class Replay {
         AuthRegistry authorisations = new AuthRegistry(ledger);
         EventProcessingEngine engine = new EventProcessingEngine(journal, authorisations);
         DayClose close = new DayClose(journal, ledger);
+        Interest interest = new Interest(ledger);
 
         Map<String, Integer> openDay = new LinkedHashMap<>();
         openDay.put("ACC-001", 1);
@@ -47,6 +49,7 @@ public final class Replay {
             int day = openDay.get(event.accountId());
             while (day < event.processingDay()) {
                 close.close(event.accountId(), day);
+                interest.accrue(event.accountId(), day);
                 closed.put(key(event.accountId(), day), ledger.balanceTo(event.accountId(), day));
                 holdsAtClose.put(key(event.accountId(), day), authorisations.heldFor(event.accountId()));
                 day++;
@@ -61,24 +64,33 @@ public final class Replay {
         for (Map.Entry<String, Integer> entry : openDay.entrySet()) {
             for (int day = entry.getValue(); day <= LAST_DAY; day++) {
                 close.close(entry.getKey(), day);
+                interest.accrue(entry.getKey(), day);
                 closed.put(key(entry.getKey(), day), ledger.balanceTo(entry.getKey(), day));
                 holdsAtClose.put(key(entry.getKey(), day), authorisations.heldFor(entry.getKey()));
             }
         }
+        for (String account : openDay.keySet()) {
+            interest.capitalise(account, LAST_DAY, journal);
+        }
 
-        System.out.println("day | account | close    | fee    | holds");
+        System.out.println("day | account | close    | fee    | accrual | holds");
         for (int day = 1; day <= LAST_DAY; day++) {
             for (String account : openDay.keySet()) {
                 Money balance = closed.get(key(account, day));
                 Money holds = holdsAtClose.get(key(account, day));
-                System.out.printf("%3d | %-7s | %8s | %6s | %s%n",
+                System.out.printf("%3d | %-7s | %8s | %6s | %7s | %s%n",
                         day, account,
                         balance == null ? "-" : balance.format(),
                         feeOn(journal, account, day),
+                        Money.ofMinor(interest.allocated(account, day),
+                                ledger.currencyOf(account)).format(),
                         holds == null ? "-" : holds.format());
             }
         }
-
+        System.out.println();
+        for (String account : openDay.keySet()) {
+            System.out.println("final " + account + ": " + ledger.balanceTo(account, LAST_DAY).format());
+        }
         System.out.println();
         System.out.println("authorisations: Auth-A " + authorisations.stateOf("Auth-A")
                 + ", Auth-B " + authorisations.stateOf("Auth-B"));
